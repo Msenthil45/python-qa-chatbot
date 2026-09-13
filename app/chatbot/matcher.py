@@ -1,10 +1,10 @@
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import List
 
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from app.chatbot.knowledge_base import KnowledgeBase
+from app.chatbot.match_result import MatchResult
 from app.chatbot.preprocessor import clean_text
 from app.config import SIMILARITY_THRESHOLD
 
@@ -13,13 +13,6 @@ from app.config import SIMILARITY_THRESHOLD
 # sklearn's standard English list, on top of which it would otherwise let
 # a single generic word like "python" tie-match many unrelated entries.
 _STOP_WORDS = list(ENGLISH_STOP_WORDS.union({"python"}))
-
-
-@dataclass
-class MatchResult:
-    matched: bool
-    score: float
-    entry: Optional[Dict[str, Any]]
 
 
 class QuestionMatcher:
