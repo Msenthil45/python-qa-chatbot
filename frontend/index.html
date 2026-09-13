@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Q&amp;A Chatbot</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-title">
+          <span class="logo" aria-hidden="true">🐍</span>
+          <div>
+            <h1>Python Q&amp;A Chatbot</h1>
+            <p>Ask me anything about Python programming</p>
+          </div>
+        </div>
+        <button id="clear-btn" class="clear-btn" type="button" title="Clear chat history">
+          Clear Chat
+        </button>
+      </div>
+    </header>
+
+    <main class="chat-shell">
+      <div id="chat-window" class="chat-window" aria-live="polite"></div>
+
+      <div id="suggestions" class="suggestions" aria-label="Suggested questions"></div>
+
+      <p id="error-banner" class="error-banner" role="alert" hidden></p>
+
+      <form id="chat-form" class="chat-input-row">
+        <input
+          id="chat-input"
+          type="text"
+          placeholder="Ask a Python question... e.g. What is a decorator?"
+          autocomplete="off"
+          maxlength="500"
+          aria-label="Type your Python question"
+        />
+        <button type="submit" id="send-btn">Send</button>
+      </form>
+    </main>
+
+    <footer class="app-footer">
+      <p>Answers come from a fixed knowledge base, not a live AI model — it may not know everything.</p>
+    </footer>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
