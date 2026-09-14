@@ -5,10 +5,11 @@ from app.models.schemas import ChatRequest, ChatResponse
 router = APIRouter(prefix="/api")
 
 FALLBACK_MESSAGE = (
-    "I don't have information about that in my knowledge base yet. Try asking about "
-    "Python variables, data types, operators, conditional statements, loops, functions, "
+    "I couldn't find or generate an answer to that. Try asking about Python variables, "
+    "data types, operators, conditional statements, loops, functions, "
     "lists/tuples/sets/dictionaries, strings, object-oriented programming, exception "
-    "handling, file handling, modules and packages, or common interview questions."
+    "handling, file handling, modules and packages, common interview questions — or any "
+    "other programming language or concept."
 )
 
 
@@ -28,19 +29,37 @@ def chat(payload: ChatRequest, request: Request) -> ChatResponse:
     matcher = request.app.state.matcher
     result = matcher.match(payload.message)
 
-    if not result.matched:
+    if result.matched:
+        entry = result.entry
+        return ChatResponse(
+            answer=entry["answer"],
+            matched=True,
+            confidence=round(result.score, 4),
+            category=entry["category"],
+            code_example=entry["code_example"] or None,
+            matched_question=entry["question"],
+            source="knowledge_base",
+        )
+
+    # Not in the curated Python KB with enough confidence — ask the local
+    # LLM instead of giving up, so other languages and broader concepts are
+    # still answerable. If Ollama is unreachable or errors out, fall back to
+    # the honest static message rather than a 500.
+    llm_client = request.app.state.llm_client
+    llm_result = llm_client.generate_answer(payload.message)
+
+    if llm_result.error:
         return ChatResponse(
             answer=FALLBACK_MESSAGE,
             matched=False,
             confidence=round(result.score, 4),
+            source="none",
         )
 
-    entry = result.entry
     return ChatResponse(
-        answer=entry["answer"],
-        matched=True,
+        answer=llm_result.answer,
+        matched=False,
         confidence=round(result.score, 4),
-        category=entry["category"],
-        code_example=entry["code_example"] or None,
-        matched_question=entry["question"],
+        code_example=llm_result.code_example,
+        source="ai",
     )

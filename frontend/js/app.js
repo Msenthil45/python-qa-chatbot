@@ -15,7 +15,7 @@ const SUGGESTED_QUESTIONS = [
   "What are *args and **kwargs?",
   "How do you handle exceptions with try-except?",
   "What is a lambda function?",
-  "What is the difference between deep copy and shallow copy?",
+  "What is a closure in JavaScript?",
 ];
 
 let history = [];
@@ -28,7 +28,7 @@ function setInputDisabled(disabled) {
   });
 }
 
-function renderMessage({ role, text, codeExample, category, isError }) {
+function renderMessage({ role, text, codeExample, category, source, isError }) {
   const wrapper = document.createElement("div");
   wrapper.className = `message ${role}${isError ? " error" : ""}`;
 
@@ -39,6 +39,11 @@ function renderMessage({ role, text, codeExample, category, isError }) {
     const tag = document.createElement("span");
     tag.className = "category-tag";
     tag.textContent = category;
+    bubble.appendChild(tag);
+  } else if (source === "ai") {
+    const tag = document.createElement("span");
+    tag.className = "category-tag ai-tag";
+    tag.textContent = "AI generated — not from the verified knowledge base";
     bubble.appendChild(tag);
   }
 
@@ -121,9 +126,10 @@ function renderWelcomeMessage() {
   renderMessage({
     role: "bot",
     text:
-      "Hi! I'm a Python Q&A chatbot. Ask me about variables, data types, loops, " +
-      "functions, OOP, exceptions, file handling, and more — or try one of the " +
-      "suggestions below.",
+      "Hi! Ask me about Python — variables, data types, loops, functions, OOP, " +
+      "exceptions, file handling, and more — for a verified answer from my knowledge " +
+      "base. Ask about any other language or concept and I'll generate an answer with " +
+      "a local AI model instead. Try one of the suggestions below.",
   });
 }
 
@@ -161,12 +167,14 @@ async function sendMessage(message) {
       text: data.answer,
       codeExample: data.code_example,
       category: data.category,
+      source: data.source,
     });
     addToHistory({
       role: "bot",
       text: data.answer,
       codeExample: data.code_example,
       category: data.category,
+      source: data.source,
     });
   } catch {
     hideTypingIndicator();
