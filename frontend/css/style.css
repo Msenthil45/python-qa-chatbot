@@ -162,6 +162,18 @@ body {
   margin-bottom: 8px;
 }
 
+.ai-tag {
+  background: #fff3d6;
+  color: #92620a;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ai-tag {
+    background: #3a2f14;
+    color: #e8b84b;
+  }
+}
+
 .message-text {
   white-space: pre-wrap;
 }
